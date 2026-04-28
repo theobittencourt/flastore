@@ -6,6 +6,14 @@ Feito em Angular 21, sem backend, sem banco de dados — tudo roda no navegador 
 
 ---
 
+## Deploy
+
+O projeto está publicado em **[flastore.vercel.app](https://flastore.vercel.app)**.
+
+Qualquer push para a branch `main` dispara um novo deploy automaticamente via Vercel.
+
+---
+
 ## Rodando o projeto
 
 ```bash
