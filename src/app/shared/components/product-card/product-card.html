@@ -1,0 +1,21 @@
+<div class="card">
+  @if (product.destaque) {
+    <span class="badge-destaque">Destaque</span>
+  }
+
+  <div class="card-img-wrap">
+    <img [src]="product.imagem" [alt]="product.nome" class="card-img" loading="lazy" />
+  </div>
+
+  <div class="card-body">
+    <span class="category">{{ product.categoria }}</span>
+    <h3 class="card-title">{{ product.nome }}</h3>
+    <p class="card-price">{{ product.preco | currency:'BRL':'symbol':'1.2-2' }}</p>
+
+    <div class="card-actions">
+      <a [routerLink]="['/produto', product.id]" class="btn btn-outline">Ver detalhes</a>
+      <button (click)="buyNow.emit(product)" class="btn btn-primary">Comprar agora</button>
+      <button (click)="addToCart.emit(product)" class="btn btn-secondary">+ Carrinho</button>
+    </div>
+  </div>
+</div>

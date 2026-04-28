@@ -1,0 +1,17 @@
+<nav class="navbar">
+  <a routerLink="/" class="navbar-brand">
+    <span class="brand-fla">FLA</span><span class="brand-store">STORE</span>
+    <span class="brand-tag">Analytics</span>
+  </a>
+
+  <div class="navbar-links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Loja</a>
+
+    @if (isAdmin) {
+      <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      <button (click)="logout()" class="btn-logout">Sair</button>
+    } @else {
+      <a routerLink="/admin/login" class="btn-admin">Área Admin</a>
+    }
+  </div>
+</nav>

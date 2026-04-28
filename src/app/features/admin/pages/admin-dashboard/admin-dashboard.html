@@ -1,0 +1,120 @@
+<div class="dashboard">
+  <!-- Header -->
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <span class="brand-fla">FLA</span><span class="brand-store">STORE</span>
+      <span class="dash-title-tag">Dashboard Admin</span>
+    </div>
+    <div class="dash-header-right">
+      <a routerLink="/" class="btn btn-outline">Ver Loja</a>
+      <button (click)="logout()" class="btn btn-ghost">Sair</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="dash-main">
+
+    <!-- Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon">📊</span>
+        <div>
+          <span class="stat-label">Total de Cliques</span>
+          <span class="stat-value">{{ totalCliques }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon">🏆</span>
+        <div>
+          <span class="stat-label">Produtos Rastreados</span>
+          <span class="stat-value">{{ ranking.length }}</span>
+        </div>
+      </div>
+
+      @if (mostClicked) {
+        <div class="stat-card stat-card--red">
+          <span class="stat-icon">🔥</span>
+          <div>
+            <span class="stat-label">Mais Clicado</span>
+            <span class="stat-value stat-value--sm">{{ mostClicked.name }}</span>
+            <span class="stat-sub">{{ mostClicked.count }} cliques</span>
+          </div>
+        </div>
+      }
+
+      <div class="stat-card">
+        <span class="stat-icon">📋</span>
+        <div>
+          <span class="stat-label">Eventos Recentes</span>
+          <span class="stat-value">{{ eventos.length }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ranking -->
+    <section class="dash-card">
+      <h2 class="dash-card-title">Ranking de Produtos</h2>
+
+      @if (ranking.length) {
+        <div class="ranking-list">
+          @for (item of ranking; track item.id; let i = $index) {
+            <div class="ranking-item">
+              <span class="rank-pos" [class.rank-pos--gold]="i === 0" [class.rank-pos--silver]="i === 1" [class.rank-pos--bronze]="i === 2">
+                #{{ i + 1 }}
+              </span>
+              <div class="rank-info">
+                <span class="rank-name">{{ item.name }}</span>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar">
+                    <div class="rank-bar-fill" [style.width]="porcentagem(item.count) + '%'"></div>
+                  </div>
+                  <span class="rank-pct">{{ porcentagem(item.count) }}%</span>
+                </div>
+              </div>
+              <span class="rank-count">{{ item.count }} cliques</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="dash-empty">Nenhum clique registrado ainda. Acesse a loja e interaja com os produtos.</p>
+      }
+    </section>
+
+    <!-- Recent Events -->
+    <section class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Eventos Recentes</h2>
+        <button (click)="limparEstatisticas()" class="btn btn-danger">Limpar tudo</button>
+      </div>
+
+      @if (eventos.length) {
+        <div class="table-wrap">
+          <table class="events-table">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Ação</th>
+                <th>Data / Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (ev of eventos; track $index) {
+                <tr>
+                  <td class="td-product">{{ ev.productName }}</td>
+                  <td>
+                    <span class="action-tag action-{{ ev.action }}">{{ ev.action }}</span>
+                  </td>
+                  <td class="td-date">{{ ev.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="dash-empty">Nenhum evento registrado.</p>
+      }
+    </section>
+
+  </main>
+</div>

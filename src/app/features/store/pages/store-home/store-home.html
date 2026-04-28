@@ -1,0 +1,55 @@
+<app-navbar />
+
+<main class="store-main">
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Loja Oficial</p>
+      <h1>A loja do <span>Mais Querido</span><br />do Brasil</h1>
+      <p class="hero-sub">Camisas, casacos, acessórios e muito mais.<br />Só produtos oficiais do Flamengo.</p>
+    </div>
+    <div class="hero-badge">
+      <span>CRF</span>
+      <small>1895</small>
+    </div>
+  </section>
+
+  <section class="products-section">
+    <div class="products-header">
+      <h2>Nossos Produtos</h2>
+
+      <div class="filtros">
+        <button
+          (click)="filtrar('Todos')"
+          [class.active]="categoriaAtiva() === 'Todos'"
+          class="filtro-btn">
+          Todos
+        </button>
+        @for (cat of categorias; track cat) {
+          <button
+            (click)="filtrar(cat)"
+            [class.active]="categoriaAtiva() === cat"
+            class="filtro-btn">
+            {{ cat }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="products-grid">
+      @for (produto of produtos; track produto.id) {
+        <app-product-card
+          [product]="produto"
+          (buyNow)="onBuyNow($event)"
+          (addToCart)="onAddToCart($event)" />
+      }
+    </div>
+  </section>
+</main>
+
+<footer class="store-footer">
+  <p>
+    <span class="brand-fla">FLA</span><span class="brand-store">STORE</span> Analytics
+    &nbsp;&mdash;&nbsp;
+    Uma vez Flamengo, sempre Flamengo.
+  </p>
+</footer>
