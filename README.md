@@ -1,59 +1,115 @@
-# FlaStore
+# FlaStore Analytics
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Loja online mockada do Flamengo com rastreamento de cliques por produto e painel admin com estatísticas em tempo real.
 
-## Development server
+Feito em Angular 21, sem backend, sem banco de dados — tudo roda no navegador via `localStorage`.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Rodando o projeto
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Acesse `http://localhost:4200`.
 
-```bash
-ng generate --help
+---
+
+## Acesso ao admin
+
+| Campo | Valor |
+|---|---|
+| URL | `/admin/login` |
+| Usuário | `admin` |
+| Senha | `admin` |
+
+---
+
+## Configurando o Microsoft Clarity em produção
+
+O projeto já tem o `ClarityService` integrado. Quando o script do Clarity estiver ativo, os eventos são enviados automaticamente — sem precisar mudar nada no código Angular.
+
+**Passo a passo:**
+
+1. Acesse [clarity.microsoft.com](https://clarity.microsoft.com) e crie uma conta
+2. Crie um novo projeto e copie o **ID** gerado (ex: `abc123xyz`)
+3. Abra o arquivo `src/index.html`
+4. Localize o bloco comentado com `MICROSOFT CLARITY`
+5. Descomente o script e substitua `SEU_ID_CLARITY` pelo seu ID:
+
+```html
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "SEU_ID_CLARITY");
+</script>
 ```
 
-## Building
+6. Faça o build e deploy normalmente
 
-To build the project run:
+A partir daí, cada clique em produto passa a ser enviado ao painel do Clarity com o nome do evento e os dados do produto. Enquanto o script não estiver ativo, os eventos ficam salvos só no `localStorage` como fallback.
 
-```bash
-ng build
+---
+
+## Arquitetura
+
+SPA Angular 21, standalone components, lazy loading em todas as rotas.
+
+```
+src/app/
+├── core/
+│   ├── services/
+│   │   ├── product.service       # produtos mockados
+│   │   ├── analytics.service     # leitura e escrita no localStorage
+│   │   ├── clarity.service       # integração com Microsoft Clarity
+│   │   └── auth.service          # autenticação mockada
+│   ├── guards/
+│   │   └── auth.guard            # protege /admin/dashboard
+│   └── interceptors/
+│       └── auth.interceptor      # injeta token JWT nos requests HTTP
+│
+├── shared/
+│   └── components/
+│       ├── navbar
+│       └── product-card
+│
+├── features/
+│   ├── store/pages/
+│   │   ├── store-home            # catálogo com filtro por categoria
+│   │   └── product-detail        # página do produto (/produto/:id)
+│   └── admin/pages/
+│       ├── admin-login
+│       └── admin-dashboard       # ranking, eventos recentes, estatísticas
+│
+├── models/
+│   ├── product.model
+│   └── analytics-event.model
+│
+├── app.routes.ts
+├── app.config.ts
+└── app.ts
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Fluxo de rastreamento
 
-## Running unit tests
+Cada interação do usuário (abrir detalhe, comprar, adicionar ao carrinho) dispara dois rastreamentos em paralelo:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- **AnalyticsService** → salva no `localStorage` com productId, nome, ação e timestamp
+- **ClarityService** → envia para o Clarity via `window.clarity()` se o script estiver ativo, ou salva no `localStorage` como fallback
 
-```bash
-ng test
-```
+O dashboard admin lê diretamente o `localStorage` para montar o ranking e a tabela de eventos.
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Onde alterar as coisas
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| O quê | Onde |
+|---|---|
+| Produtos | `src/app/core/services/product.service.ts` |
+| Credenciais do admin | `src/app/core/services/auth.service.ts` |
+| Script do Clarity | `src/index.html` |
+| Cores e variáveis CSS | `src/styles.css` |
